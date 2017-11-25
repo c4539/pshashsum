@@ -42,6 +42,9 @@ param(
     [ValidateSet("MD5","SHA1","SHA256","SHA384","SHA512")]
     [Parameter(Position=2)]
 	$Algorithm = "SHA256"
+    ,
+    [String]
+    $OutFile = $null
 ,
 	[Switch]
 	$Force=$false
@@ -60,7 +63,15 @@ $ProgressBarTotal = $FileList.Length
 $FileList | ForEach-Object {
     $File = $_
     $Filename = $File.Name
-    $HashFilename = $File.FullName + "." + $Algorithm.ToLower()
+    if ($OutFile -eq $null) {
+        $HashFilename = $File.FullName + "." + $Algorithm.ToLower()
+    } else {
+        if ($OutFile.EndsWith("." + $Algorithm.ToLower())) {
+            $HashFilename = [System.IO.Path]::Combine($File.Directory.FullName, $OutFile)
+        } else {
+            $HashFilename = [System.IO.Path]::Combine($File.Directory.FullName, $OutFile) + "." + $Algorithm.ToLower()
+        }
+    }
     
     # Write progress
 	Write-Progress -Activity "Exprting file hashes" -Status "Processing $Filename" -PercentComplete ([int] (($ProgressBarCount++/$ProgressBarTotal)*100))
@@ -69,5 +80,5 @@ $FileList | ForEach-Object {
     $Hash = Get-FileHash -Path $_ -Algorithm $Algorithm
 
     # Write hash to file
-    ("" + $Hash.Hash + "  " + $Filename) | Out-File -FilePath $HashFilename -Force:$Force
+    ("" + $Hash.Hash + "  " + $Filename) | Out-File -FilePath $HashFilename -Append:($OutFile -ne $null) -Force:$Force
 }
