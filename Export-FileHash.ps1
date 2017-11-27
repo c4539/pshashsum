@@ -12,11 +12,11 @@ An array of files to be hashed.
 The hash algorithm do be used.
 Default is SHA256.
 
+.PARAMETER OutFile
+File to write the hashes to.
+
 .PARAMETER Force
 Force the script to overwrite the output file.
-
-.EXAMPLE
-
 
 .NOTES
 	File Name  : Export-FileHash.ps1
@@ -42,7 +42,7 @@ param(
     [ValidateSet("MD5","SHA1","SHA256","SHA384","SHA512")]
     [Parameter(Position=2)]
 	$Algorithm = "SHA256"
-    ,
+,
     [String]
     $OutFile = $null
 ,

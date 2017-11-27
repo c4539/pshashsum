@@ -8,9 +8,6 @@ Test file hashes.
 .PARAMETER File
 The file containing the hashes.
 
-.EXAMPLE
-
-
 .NOTES
 	File Name  : Test-FileHash.ps1
 	Author     : c4539  
@@ -34,10 +31,11 @@ param(
 
 # Get files
 $Lines = Get-Content -Path $File
-#$Files = Import-Csv -Path $File -Delimiter "  " -Header {"Hash","Filename"}
 
+# Get working directory
 $Directory = (Get-Item $File).Directory.FullName
 
+# Get algorithm from filename
 $Algorithm = (Get-Item $File).Extension.Substring(1).ToUpper()
 
 # Init progress bar
@@ -49,7 +47,6 @@ $Lines | ForEach-Object {
     $Line = $_
     $Hash,$Filename = $Line -Split "  "
     $FileFullname = [System.IO.Path]::Combine($Directory, $Filename)
-    #$Hash = $_.Hash
     
     # Write progress
 	Write-Progress -Activity "Testing file hash" -Status "Processing $Filename" -PercentComplete ([int] (($ProgressBarCount++/$ProgressBarTotal)*100))
